@@ -1,6 +1,8 @@
 require "open-uri"
 require "json"
+require "ascii_charts"
 
+puts "========================================\n    Will you need an umbrella today?    \n========================================\n\n"
 p "Where are you located?"
 
 # user_location = gets.chomp()
@@ -20,16 +22,26 @@ latitude = location.fetch("lat")
 longitude = location.fetch("lng")
 p latitude, longitude
 
+p "Checking the weather at #{user_location}"
+p "Your coordinates are #{latitude}, #{longitude}"
+
 
 # fetch weather information
-weather_api_key = "3RrQrvLmiUayQ84JSxL8D2aXw99yRKlx1N4qFDUE"
+weather_api_key = ENV.fetch("PIRATE_WEATHER_KEY")
 weather_uri = "https://api.pirateweather.net/forecast/#{weather_api_key}/#{latitude},#{longitude}"
 response = URI.open(weather_uri).read
 parsed_reponse = JSON.parse(response)
 # p parsed_reponse.keys
 
 weather_info = parsed_reponse.fetch("currently")
-# p weather_info
+p weather_info
 
 temp_now = weather_info.fetch("temperature")
-p temp_now
+p "It is currently #{temp_now} °F."
+
+time_fetched = Time.at(weather_info.fetch("time"))
+p time_fetched
+
+
+# ACSII Charts
+puts AsciiCharts::Cartesian.new([[0, 1], [1, 3], [2, 7], [3, 15], [4, 4]]).draw
