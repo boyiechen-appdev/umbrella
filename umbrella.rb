@@ -68,8 +68,11 @@ prob_precip = 0
   plot_data.push([hour+1, prob])
 end
 
+# p plot_data
+
 
 # ACSII Charts
+# puts AsciiCharts::Cartesian.new(plot_data, :hide_zero => false).draw
 puts AsciiCharts::Cartesian.new(plot_data).draw
 
 # bringing umbrella message
