@@ -23,4 +23,13 @@ p latitude, longitude
 
 # fetch weather information
 weather_api_key = "3RrQrvLmiUayQ84JSxL8D2aXw99yRKlx1N4qFDUE"
-weather_uri = "https://api.pirateweather.net/forecast/#{weather_api_key}/#{},#{}"
+weather_uri = "https://api.pirateweather.net/forecast/#{weather_api_key}/#{latitude},#{longitude}"
+response = URI.open(weather_uri).read
+parsed_reponse = JSON.parse(response)
+# p parsed_reponse.keys
+
+weather_info = parsed_reponse.fetch("currently")
+# p weather_info
+
+temp_now = weather_info.fetch("temperature")
+p temp_now
