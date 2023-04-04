@@ -34,7 +34,7 @@ parsed_response = JSON.parse(response)
 # p parsed_reponse.keys
 
 weather_info_now = parsed_response.fetch("currently")
-weather_info_forecast = parsed_response.fetch("hourly").fetch("data")
+weather_info_forecast = parsed_response.fetch("hourly").fetch("data")[1..12]
 # p parsed_response.keys
 # p parsed_response.fetch("hourly").keys
 # p parsed_response.fetch("hourly").fetch("data").at(1)
@@ -44,24 +44,38 @@ puts "It is currently #{temp_now} °F.\n"
 
 
 # weather forecast
-puts "Hours from now vs Precipitation probability"
+
+# Within the next hour (minutely data)
+# since there might not be minutely data, we put a false inside `fetch`
+# so our code won't break
+weather_info_minutely = parsed_response.fetch("minutely", false)
+if weather_info_minutely
+  puts "Next hour: #{weather_info_minutely.fetch("summary")}"
+end
+
+# Next 12 hours
+puts "\nHours from now vs Precipitation probability"
 # p weather_info.fetch("precipProbability")
 
 # use a for loop to obtain the precipitation probability in the next 12 hrs
 plot_data = []
 
+prob_precip = 0
 12.times do |hour|
   # p weather_info_forecast.at(hour).fetch("precipProbability")
-  prob =  weather_info_forecast.at(hour).fetch("precipProbability")
-  plot_data.push([hour, prob])
+  prob =  weather_info_forecast.at(hour).fetch("precipProbability") * 100
+  prob_precip = [prob, prob_precip].max
+  plot_data.push([hour+1, prob])
 end
-# p weather_info_forecast.at(1)
-# p plot_data
-
-# time_fetched = Time.at(weather_info_now.fetch("time"))
-# p time_fetched
 
 
 # ACSII Charts
-# puts AsciiCharts::Cartesian.new([[0, 1], [1, 3], [2, 7], [3, 15], [4, 4]]).draw
 puts AsciiCharts::Cartesian.new(plot_data).draw
+
+# bringing umbrella message
+prob_threshold = 10
+if prob_precip >= prob_threshold
+  puts "You might want to take an umbrella"
+else
+  puts "You probably won't need an umbrella"
+end
